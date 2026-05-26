@@ -12,7 +12,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { useErrorToast } from "@/hooks/useCustomToasts";
@@ -21,6 +20,7 @@ import { useSession } from "next-auth/react";
 import { useRef, useState } from "react";
 
 const maxSizeMB = 5 * 1024 * 1024; // 5MB
+
 export default function ProfilePage() {
   const { show: showErrorToast } = useErrorToast();
   const { data: session } = useSession();
@@ -79,7 +79,7 @@ export default function ProfilePage() {
       return;
     }
 
-    // اینجا API فراخوانی می‌شود
+    // call API
     // toast.success("Password updated successfully!");
   };
 
@@ -101,8 +101,10 @@ export default function ProfilePage() {
               <div className="relative">
                 <Avatar className="h-24 w-24 border-2 border-primary-100">
                   <AvatarImage src={imagePreview ?? undefined} />
-                  <AvatarFallback className="bg-primary-50 text-primary-600 text-2xl font-bold">
-                    {session?.user.name.substring(0, 2).toUpperCase()}
+                  <AvatarFallback className="bg-primary-50 text-primary-600 text-2xl font-bold uppercase">
+                    {session?.user.name
+                      ? session?.user.name.charAt(0)
+                      : session?.user.email.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <Button

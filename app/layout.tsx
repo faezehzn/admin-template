@@ -23,7 +23,12 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col">
         <Providers>
           {children}
-          <Toaster position="top-right" />
+          <Toaster
+            visibleToasts={10}
+            expand={true}
+            richColors
+            position="top-right"
+          />
         </Providers>
       </body>
     </html>

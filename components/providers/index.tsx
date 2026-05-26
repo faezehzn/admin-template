@@ -3,6 +3,8 @@ import { ReactNode, Suspense } from "react";
 import { SessionProvider } from "next-auth/react";
 import { Loading } from "../shared/loading";
 import { ThemeProvider } from "./theme-provider";
+import { Provider as ReduxProvider } from "react-redux";
+import { store } from "@/stores/store";
 
 const FullScreenLoader = () => (
   <div className="fixed inset-0 grid place-items-center">
@@ -11,28 +13,12 @@ const FullScreenLoader = () => (
 );
 
 export function Providers({ children }: { children: ReactNode }) {
-  // const [isReady, setIsReady] = useState(false);
-
-  // useEffect(() => {
-  //   const markReady = () => setIsReady(true);
-
-  //   if (typeof window !== "undefined") {
-  //     if (document.readyState === "complete") {
-  //       markReady();
-  //     } else {
-  //       window.addEventListener("load", markReady);
-  //       return () => window.removeEventListener("load", markReady);
-  //     }
-  //   }
-  // }, []);
-
-  // if (!isReady) return <FullScreenLoader />;
   return (
     <SessionProvider>
       <ThemeProvider>
-        {/* <ReduxProvider store={store}> */}
+        <ReduxProvider store={store}>
           <Suspense fallback={<FullScreenLoader />}>{children}</Suspense>
-        {/* </ReduxProvider> */}
+        </ReduxProvider>
       </ThemeProvider>
     </SessionProvider>
   );

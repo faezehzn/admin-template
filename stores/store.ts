@@ -1,17 +1,22 @@
 "use client";
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
+import { usersApi } from "./usersApi";
+import { rolesApi } from "./rolesApi";
+import { permissionsApi } from "./permissionApi";
 
 export const store = configureStore({
   reducer: {
+    [usersApi.reducerPath]: usersApi.reducer,
+    [rolesApi.reducerPath]: rolesApi.reducer,
+    [permissionsApi.reducerPath]: permissionsApi.reducer,
   },
-//   middleware: (getDefault) =>
-    // getDefault().concat(
-    //   projectsApi.middleware,
-    //   usersApi.middleware,
-    //   concreteRequestsApi.middleware,
-    //   quotesApi.middleware,
-    // ),
+  middleware: (getDefault) =>
+    getDefault().concat(
+      usersApi.middleware,
+      rolesApi.middleware,
+      permissionsApi.middleware,
+    ),
 });
 
 setupListeners(store.dispatch);

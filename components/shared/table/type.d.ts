@@ -2,11 +2,13 @@ import React, { ReactNode } from "react";
 
 type AccessorFn<T> = (row: T) => React.ReactNode;
 
+export type SortDir = "asc" | "desc";
+
 type Column<T> = {
   header: string;
   accessor: keyof T | AccessorFn<T>;
   sortable?: boolean;
-  sortKey?: keyof T;
+  sortKey?: string;
   cellClassName?: string;
   widthClassName?: string;
   hideOnMobile?: boolean;
@@ -28,4 +30,7 @@ interface TableProps<T> {
   emptyText?: string;
   actions?: Action<T>[];
   className?: string;
+  sortBy?: string;
+  sortDir?: SortDir;
+  onSortChange?: (sortBy: string, sortDir: SortDir) => void;
 }

@@ -15,6 +15,7 @@ export default function CreateBaseModal({
   title = "Create Item",
   description = "Create a new item by filling out the form below.",
   handler,
+  isLoading,
   content,
 }: {
   open: boolean;
@@ -23,6 +24,7 @@ export default function CreateBaseModal({
   description?: string;
   handler: () => void;
   content: ReactNode;
+  isLoading?: boolean
 }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -33,7 +35,7 @@ export default function CreateBaseModal({
         </DialogHeader>
         <div className="space-y-3">
           {content}
-          <Button className="w-full" onClick={handler}>
+          <Button disabled={isLoading} className="w-full" onClick={handler}>
             Create
           </Button>
         </div>

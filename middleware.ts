@@ -6,7 +6,6 @@ export default withAuth(
     const token = req.nextauth.token
     const { pathname } = req.nextUrl
 
-    // اگر لاگین بود و رفت login
     if (token && pathname === "/login") {
       return NextResponse.redirect(new URL("/admin", req.url))
     }
@@ -14,7 +13,6 @@ export default withAuth(
   {
     callbacks: {
       authorized: ({ token, req }) => {
-        // محافظت از admin
         if (req.nextUrl.pathname.startsWith("/admin")) {
           return !!token
         }

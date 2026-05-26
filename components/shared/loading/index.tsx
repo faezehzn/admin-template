@@ -31,7 +31,6 @@ export const Loading = ({
           height={160}
           src={loading}
           alt="Loading animation"
-          priority
           className={cn(
             "h-14 w-14 object-contain rounded-full",
             classNameImage,

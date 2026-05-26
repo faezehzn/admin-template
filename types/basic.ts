@@ -1,12 +1,6 @@
-export type User = {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  status: "active" | "inactive";
-};
-export type Role = {
-  id: number;
-  name: string;
-  users: number;
-};
+export interface ErrorResponse {
+  status: number;
+  data: {
+    [key: string]: string[]; // Adjust the value type if it's more specific
+  };
+}

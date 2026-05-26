@@ -15,12 +15,14 @@ export default function EditBaseDrawer({
   content,
   title = "Edit Item",
   handler,
+  isLoading,
 }: {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   content: ReactNode;
   title?: string;
   handler: () => void;
+  isLoading?: boolean;
 }) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -31,7 +33,7 @@ export default function EditBaseDrawer({
 
         <div className="flex flex-col gap-4 w-full h-full justify-between">
           {content}
-          <Button className="w-full" onClick={handler}>
+          <Button disabled={isLoading} className="w-full" onClick={handler}>
             Save Changes
           </Button>
         </div>

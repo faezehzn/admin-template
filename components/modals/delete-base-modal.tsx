@@ -16,11 +16,13 @@ export const DeleteBaseModal = ({
   handleDelete,
   title = "Delete this item?",
   description = "This action cannot be undone. This item will be permanently removed.",
+  isLoading,
 }: {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   handleDelete: () => void;
   title?: string;
+  isLoading?: boolean;
   description?: string;
 }) => {
   return (
@@ -35,7 +37,7 @@ export const DeleteBaseModal = ({
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
 
-          <AlertDialogAction onClick={handleDelete} variant="destructive">
+          <AlertDialogAction disabled={isLoading} onClick={handleDelete} variant="destructive">
             Delete
           </AlertDialogAction>
         </AlertDialogFooter>

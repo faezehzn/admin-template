@@ -1,23 +1,20 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { hasPermission, Permission } from "@/lib/permissions";
 import { ReactNode } from "react";
 
 export default function Can({
   permission,
   children,
 }: {
-  permission: Permission;
+  permission: string;
   children: ReactNode;
 }) {
-  const { data: session } = useSession();
+  const { data } = useSession();
 
-  if (!session) return null;
+  const permissions = data?.user?.permissions ?? [];
 
-  const role = session.user.role;
-
-  if (!hasPermission(role, permission)) {
+  if (!permissions.includes(permission)) {
     return null;
   }
 

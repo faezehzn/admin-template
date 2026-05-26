@@ -39,10 +39,10 @@ export function Tooltip({
             align={align}
             sideOffset={sideOffset}
             // ✨ Smart Auto Placement
-            collisionPadding={12} // فاصله از لبه‌ها
-            avoidCollisions={true} // برخورد رو حساب کن
-            sticky="always" // همیشه تلاش کن نزدیک بماند
-            alignOffset={4} // ریزتنظیم
+            collisionPadding={12}
+            avoidCollisions={true}
+            sticky="always"
+            alignOffset={4}
             className={cn(
               "z-99999 rounded-md px-3 py-1.5 text-sm shadow-md animate-in fade-in zoom-in-95",
               "bg-primary-300 text-primary-600",

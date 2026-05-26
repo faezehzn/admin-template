@@ -11,12 +11,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Bell, Menu, Search } from "lucide-react";
+import { Bell, Menu, Router, Search } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { Dispatch, SetStateAction } from "react";
 import { FaUser } from "react-icons/fa";
 import { ThemeToggle } from "../shared/themeToggle";
+import { useRouter } from "next/navigation";
 
 export default function Navbar({
   setOpen,
@@ -24,7 +25,7 @@ export default function Navbar({
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) {
   const { data: sesstion } = useSession();
-
+  const router = useRouter();
   return (
     <header className="border-b border-primary-100 flex items-center justify-between px-4 py-2 bg-light sticky z-30 w-full">
       {/* Mobile menu button */}
@@ -53,10 +54,10 @@ export default function Navbar({
         {/* dark/light mode btn */}
         <ThemeToggle className="px-1.5" />
         {/* Notifications */}
-        <Button variant="ghost" size="icon" className="relative cursor-pointer">
+        {/* <Button variant="ghost" size="icon" className="relative cursor-pointer">
           <Bell size={20} />
           <span className="absolute top-1.5 right-2 h-2 w-2 bg-error rounded-full" />
-        </Button>
+        </Button> */}
 
         {/* User Menu */}
         <DropdownMenu>
@@ -77,15 +78,23 @@ export default function Navbar({
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem>
-              <Link className="w-full" href="/admin/profile">
+            <DropdownMenuItem className="p-0">
+              <Button
+                variant="ghost"
+                className="w-full text-left justify-start"
+                onClick={() => router.push("/admin/profile")}
+              >
                 Profile
-              </Link>
+              </Button>
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Link className="w-full" href="/admin/settings">
+            <DropdownMenuItem className="p-0">
+              <Button
+                variant="ghost"
+                className="w-full text-left justify-start"
+                onClick={() => router.push("/admin/settings")}
+              >
                 Settings
-              </Link>
+              </Button>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
 

@@ -67,13 +67,6 @@ export function TableMobile<T extends { id: string | number }>({
                     <span className=" text-primary-600">
                       {renderValue(row, columns[0])}
                     </span>
-
-                    {/* optional secondary subtitle */}
-                    {/* {columns[1] && !columns[1].hideOnMobile && (
-                    <span className="text-xs text-primary-400">
-                      {renderValue(row, columns[1])}
-                    </span>
-                  )} */}
                   </div>
                 </AccordionTrigger>
 

@@ -1,6 +1,6 @@
 "use client";
-import { ReactNode, useMemo, useState } from "react";
-import { Column, TableProps } from "./type";
+import { ReactNode } from "react";
+import { Column, TableProps, SortDir } from "./type";
 import { Skeleton } from "../skeleton";
 import { cn } from "@/lib/utils";
 import {
@@ -11,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 
 export function CustomTable<T extends { id: string | number }>({
   columns,
@@ -20,51 +21,23 @@ export function CustomTable<T extends { id: string | number }>({
   emptyText = "No data available",
   actions,
   className = "",
+
+  // NEW: controlled sort (from API)
+  sortBy,
+  sortDir = "asc",
+  onSortChange,
 }: TableProps<T>) {
-  const [sortKey, setSortKey] = useState<keyof T | null>(null);
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
-
-  /** handle sorting */
   const handleSort = (col: Column<T>) => {
-    const key =
-      col.sortKey ?? (typeof col.accessor !== "function" ? col.accessor : null);
+    if (!onSortChange) return;
 
-    if (!key) return;
+    const key = col.sortKey; 
+    if (!col.sortable || !key) return;
 
-    if (sortKey === key) {
-      setSortDir((prev) => (prev === "asc" ? "desc" : "asc"));
-    } else {
-      setSortKey(key);
-      setSortDir("asc");
-    }
+    const nextDir: SortDir =
+      sortBy === key ? (sortDir === "asc" ? "desc" : "asc") : "asc";
+
+    onSortChange(key, nextDir);
   };
-
-  /** sorted data */
-  const sortedData = useMemo(() => {
-    if (!sortKey) return data;
-    if (data) {
-      const sorted = [...data].sort((a, b) => {
-        const va = a[sortKey];
-        const vb = b[sortKey];
-
-        // null/undefined handling
-        if (va == null && vb == null) return 0;
-        if (va == null) return sortDir === "asc" ? -1 : 1;
-        if (vb == null) return sortDir === "asc" ? 1 : -1;
-
-        if (typeof va === "number" && typeof vb === "number") {
-          return sortDir === "asc" ? va - vb : vb - va;
-        }
-
-        return sortDir === "asc"
-          ? String(va).localeCompare(String(vb))
-          : String(vb).localeCompare(String(va));
-      });
-      return sorted;
-    } else {
-      return [];
-    }
-  }, [data, sortKey, sortDir]);
 
   return (
     <div
@@ -80,14 +53,9 @@ export function CustomTable<T extends { id: string | number }>({
               const isHiddenMobile = col.hideOnMobile
                 ? "hidden md:table-cell"
                 : "";
-              const key =
-                col.sortKey ??
-                (typeof col.accessor === "function"
-                  ? undefined
-                  : (col.accessor as keyof T));
 
-              const sortable = col.sortable && key;
-              const isActiveSort = sortable && sortKey === key;
+              const sortable = !!(col.sortable && col.sortKey && onSortChange);
+              const isActiveSort = sortable && sortBy === col.sortKey;
 
               return (
                 <TableHead
@@ -119,13 +87,12 @@ export function CustomTable<T extends { id: string | number }>({
             })}
 
             {actions && actions.length > 0 && (
-              <TableHead className="p-3 text-center font-medium text-primary-700 uppercase tracking-wide"></TableHead>
+              <TableHead className="p-3 text-center font-medium text-primary-700 uppercase tracking-wide" />
             )}
           </TableRow>
         </TableHeader>
 
         <TableBody>
-          {/* LOADING + SKELETON */}
           {isLoading ? (
             Array.from({ length: skeletonRows }).map((_, rowIndex) => (
               <TableRow className="align-middle" key={rowIndex}>
@@ -138,7 +105,7 @@ export function CustomTable<T extends { id: string | number }>({
                       key={colIndex}
                       className={cn(isHiddenMobile, col.cellClassName)}
                     >
-                      <Skeleton className="h-6 w-24" />
+                      <Skeleton className="h-6 w-20" />
                     </TableCell>
                   );
                 })}
@@ -146,84 +113,78 @@ export function CustomTable<T extends { id: string | number }>({
                 {actions && actions.length > 0 && (
                   <TableCell>
                     <div className="flex gap-2 justify-end">
-                      <Skeleton className="h-6 w-12" />
-                      <Skeleton className="h-6 w-12" />
+                      <Skeleton className="h-6 w-10" />
+                      <Skeleton className="h-6 w-10" />
                     </div>
                   </TableCell>
                 )}
               </TableRow>
             ))
-          ) : sortedData.length === 0 ? (
+          ) : (data.length === 0) ? (
             <TableRow>
               <TableCell
-                colSpan={
-                  columns.length + (actions && actions.length > 0 ? 1 : 0)
-                }
+                colSpan={columns.length + (actions && actions.length > 0 ? 1 : 0)}
                 className="p-6 text-center"
               >
                 {emptyText}
               </TableCell>
             </TableRow>
           ) : (
-            sortedData.map((row, rowIndex) => {
-              return (
-                <TableRow key={`row-${rowIndex}`} className="last:border-0">
-                  {columns.map((col, colIndex) => {
-                    const isHiddenMobile = col.hideOnMobile
-                      ? "hidden md:table-cell"
-                      : "";
-                    const value =
-                      typeof col.accessor === "function"
-                        ? col.accessor(row)
-                        : (row[col.accessor] as ReactNode);
+            data.map((row, rowIndex) => (
+              <TableRow key={`row-${rowIndex}`} className="last:border-0">
+                {columns.map((col, colIndex) => {
+                  const isHiddenMobile = col.hideOnMobile
+                    ? "hidden md:table-cell"
+                    : "";
+                  const value =
+                    typeof col.accessor === "function"
+                      ? col.accessor(row)
+                      : (row[col.accessor] as ReactNode);
 
-                    return (
-                      <TableCell
-                        key={colIndex}
-                        className={cn(isHiddenMobile, col.cellClassName)}
-                      >
-                        {value}
-                      </TableCell>
-                    );
-                  })}
-
-                  {/* ACTIONS */}
-                  {actions && actions.length > 0 && (
-                    <TableCell>
-                      <div className="flex gap-2 justify-end">
-                        {actions.map((action, idx) => {
-                          let btnClass =
-                            "inline-flex items-center justify-center p-1 rounded font-medium cursor-pointer transition-colors disabled:opacity-40 disabled:cursor-not-allowed";
-                          if (action.variant === "primary") {
-                            btnClass +=
-                              "bg-primary-100 text-primary-600 hover:bg-primary-200";
-                          } else if (action.variant === "danger") {
-                            btnClass +=
-                              "bg-red-100 text-red-600 hover:bg-red-200";
-                          } else {
-                            // ghost
-                            btnClass +=
-                              "bg-secondary-100 text-secondary-600 hover:bg-secondary-200";
-                          }
-
-                          return (
-                            <button
-                              key={idx}
-                              type="button"
-                              disabled={action?.disabled?.(row) ?? false}
-                              onClick={() => action.onClick(row)}
-                              className={cn(btnClass, action.className)}
-                            >
-                              {action.label}
-                            </button>
-                          );
-                        })}
-                      </div>
+                  return (
+                    <TableCell
+                      key={colIndex}
+                      className={cn(isHiddenMobile, col.cellClassName)}
+                    >
+                      {value}
                     </TableCell>
-                  )}
-                </TableRow>
-              );
-            })
+                  );
+                })}
+
+                {actions && actions.length > 0 && (
+                  <TableCell>
+                    <div className="flex gap-2 justify-end">
+                      {actions.map((action, idx) => {
+                        let btnClass =
+                          "inline-flex items-center justify-center p-1 rounded font-medium cursor-pointer transition-colors disabled:opacity-40 disabled:cursor-not-allowed";
+                        if (action.variant === "primary") {
+                          btnClass +=
+                            "bg-primary-100 text-primary-600 hover:bg-primary-200";
+                        } else if (action.variant === "danger") {
+                          btnClass += "bg-red-100 text-red-600 hover:bg-red-200";
+                        } else {
+                          btnClass +=
+                            "bg-secondary-100 text-secondary-600 hover:bg-secondary-200";
+                        }
+
+                        return (
+                          <Button
+                            key={idx}
+                            type="button"
+                            variant={"ghost"}
+                            disabled={action?.disabled?.(row) ?? false}
+                            onClick={() => action.onClick(row)}
+                            className={cn(btnClass, action.className)}
+                          >
+                            {action.label}
+                          </Button>
+                        );
+                      })}
+                    </div>
+                  </TableCell>
+                )}
+              </TableRow>
+            ))
           )}
         </TableBody>
       </Table>

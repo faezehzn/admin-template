@@ -30,6 +30,25 @@ export const authOptions: AuthOptions = {
           return null;
         }
 
+        const role = await prisma.role.findUnique({
+          where: {
+            id: user.roleId,
+          },
+
+          select: {
+            id: true,
+            name: true,
+            level: true,
+            permissions: {
+              include: {
+                permission: true,
+              },
+            },
+          },
+        });
+        const permissions =
+          role?.permissions.map((p) => p.permission.name) ?? [];
+
         const valid = await bcrypt.compare(credentials.password, user.password);
 
         if (!valid) {
@@ -39,10 +58,13 @@ export const authOptions: AuthOptions = {
         return {
           id: user.id,
           email: user.email,
-          name: user.name,
+          name: user.name ?? undefined,
           role: user.role.name,
+          roleId: user.role.id,
           avatar: user.avatar ?? undefined,
           status: user.status,
+          permissions,
+          roleLevel: role?.level ?? 1
         };
       },
     }),
@@ -56,18 +78,26 @@ export const authOptions: AuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.role = user.role;
+        token.roleId = user.roleId;
         token.avatar = user.avatar;
         token.status = user.status;
+        token.permissions = user.permissions;
+        token.roleLevel = user.roleLevel;
       }
 
       return token;
     },
 
     async session({ session, token }) {
-      session.user.id = token.sub;
-      session.user.role = token.role;
-      session.user.avatar = token.avatar;
-      session.user.status = token.status;
+      if (session.user) {
+        session.user.id = token.sub!;
+        session.user.role = token.role;
+        session.user.roleId = token.roleId;
+        session.user.avatar = token.avatar;
+        session.user.status = token.status;
+        session.user.permissions = token.permissions;
+        session.user.roleLevel = token.roleLevel;
+      }
 
       return session;
     },

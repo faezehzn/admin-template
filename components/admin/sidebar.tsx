@@ -5,6 +5,42 @@ import { LayoutDashboard, Users, Shield, Settings, User } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { PROJECT_NAME } from "@/constants";
+import { useSession } from "next-auth/react";
+
+export const sidebarItems = [
+  {
+    name: "Dashboard",
+    href: "/admin",
+    icon: LayoutDashboard,
+  },
+
+  {
+    name: "Users",
+    href: "/admin/users",
+    icon: Users,
+    permission: "users.read",
+  },
+
+  {
+    name: "Roles",
+    href: "/admin/roles",
+    icon: Shield,
+    permission: "roles.read",
+  },
+
+  {
+    name: "Settings",
+    href: "/admin/settings",
+    icon: Settings,
+    permission: "settings.read",
+  },
+
+  {
+    name: "Profile",
+    href: "/admin/profile",
+    icon: User,
+  },
+];
 
 export default function Sidebar({
   open,
@@ -13,13 +49,23 @@ export default function Sidebar({
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) {
-  const items = [
-    { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
-    { name: "Users", href: "/admin/users", icon: Users },
-    { name: "Roles", href: "/admin/roles", icon: Shield },
-    { name: "Settings", href: "/admin/settings", icon: Settings },
-    { name: "Profile", href: "/admin/profile", icon: User },
-  ];
+  const { data: session } = useSession();
+
+  const userPermissions = session?.user?.permissions ?? [];
+
+  const filteredItems = sidebarItems.filter((item) => {
+    /**
+     * public item
+     */
+    if (!item.permission) {
+      return true;
+    }
+
+    /**
+     * protected item
+     */
+    return userPermissions.includes(item.permission);
+  });
 
   return (
     <>
@@ -34,13 +80,15 @@ export default function Sidebar({
       <aside
         className={cn(
           "text-primary-600 w-64 min-w-44 p-4 fixed md:static space-y-4 inset-y-0 left-0 z-50 transform md:translate-x-0 transition-transform duration-200",
-          open ? "translate-x-0 bg-background" : "-translate-x-full border-r border-primary-200",
+          open
+            ? "translate-x-0 bg-background"
+            : "-translate-x-full border-r border-primary-200",
         )}
       >
         <h1 className="text-xl font-bold">{PROJECT_NAME}</h1>
 
         <ul className="space-y-2">
-          {items.map((item) => {
+          {filteredItems.map((item) => {
             const Icon = item.icon;
             return (
               <li key={item.href}>

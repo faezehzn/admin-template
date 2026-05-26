@@ -13,28 +13,35 @@ enum UserStatus {
 }
 
 model User {
-  id        String   @id @default(cuid())
+  id        String        @id @default(cuid())
   name      String?
-  email     String   @unique
+  email     String        @unique
   password  String
-  avatar    String? 
-  status    UserStatus @default(active)
+  avatar    String?
+  status    UserStatus    @default(active)
   roleId    String
-  role      Role     @relation(fields: [roleId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      Role          @relation(fields: [roleId], references: [id])
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  logs      ActivityLog[]
+  deletedAt DateTime?
+  deletedBy String?
 }
 
 model Role {
-  id          String       @id @default(cuid())
-  name        String       @unique
+  id          String           @id @default(cuid())
+  name        String           @unique
   users       User[]
   permissions RolePermission[]
+  deletedAt DateTime?
+  deletedBy String?
+  isSystem    Boolean          @default(false)
+  level       Int @default(1)
 }
 
 model Permission {
-  id          String       @id @default(cuid())
-  name        String       @unique
+  id          String           @id @default(cuid())
+  name        String           @unique
   description String?
   roles       RolePermission[]
 }
@@ -43,8 +50,29 @@ model RolePermission {
   roleId       String
   permissionId String
 
-  role         Role       @relation(fields: [roleId], references: [id])
-  permission   Permission @relation(fields: [permissionId], references: [id])
+  role       Role       @relation(fields: [roleId], references: [id])
+  permission Permission @relation(fields: [permissionId], references: [id])
 
   @@id([roleId, permissionId])
+}
+
+enum LogAction {
+  LOGIN
+  LOGOUT
+  CREATE_USER
+  UPDATE_USER
+  DELETE_USER
+  PASSWORD_RESET
+}
+
+model ActivityLog {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  action    LogAction
+  details   String?
+  timestamp DateTime  @default(now())
+
+  // targetUserId String?
+  // targetUser   User?   @relation("TargetUser", fields: [targetUserId], references: [id])
 }
