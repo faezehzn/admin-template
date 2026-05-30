@@ -26,6 +26,7 @@ model User {
   logs      ActivityLog[]
   deletedAt DateTime?
   deletedBy String?
+  bio       String?
 }
 
 model Role {
@@ -75,4 +76,10 @@ model ActivityLog {
 
   // targetUserId String?
   // targetUser   User?   @relation("TargetUser", fields: [targetUserId], references: [id])
+}
+
+model Setting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
 }

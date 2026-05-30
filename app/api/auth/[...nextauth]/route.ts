@@ -64,7 +64,8 @@ export const authOptions: AuthOptions = {
           avatar: user.avatar ?? undefined,
           status: user.status,
           permissions,
-          roleLevel: role?.level ?? 1
+          roleLevel: user.role.level ?? 1,
+          bio: user.bio ?? "",
         };
       },
     }),
@@ -83,6 +84,7 @@ export const authOptions: AuthOptions = {
         token.status = user.status;
         token.permissions = user.permissions;
         token.roleLevel = user.roleLevel;
+        token.bio = user.bio;
       }
 
       return token;
@@ -97,6 +99,7 @@ export const authOptions: AuthOptions = {
         session.user.status = token.status;
         session.user.permissions = token.permissions;
         session.user.roleLevel = token.roleLevel;
+        session.user.bio = token.bio;
       }
 
       return session;

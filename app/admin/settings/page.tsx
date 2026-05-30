@@ -1,11 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { FormField } from "@/components/shared/formField";
+import { Skeleton } from "@/components/shared/skeleton";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -13,10 +13,30 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
+import { useErrorToast, useSuccessToast } from "@/hooks/useCustomToasts";
+import { handleError } from "@/lib/errorHandler";
+import {
+  useGetSettingsQuery,
+  useUpdateSettingMutation,
+} from "@/stores/settingsApi";
 
 export default function SettingsPage() {
-  const [twoFactor, setTwoFactor] = useState(false);
+  const { show: showError } = useErrorToast();
+  const { data: settings, isLoading } = useGetSettingsQuery();
+  const [updateSetting, { isLoading: isUpdating }] = useUpdateSettingMutation();
+  const { show: showSuccess } = useSuccessToast();
+
+  const handleUpdate = async (
+    key: string,
+    value: string | number | boolean,
+  ) => {
+    try {
+      await updateSetting({ key, value }).unwrap();
+      showSuccess(`${key} updated successfully`);
+    } catch (err) {
+      handleError({ showError, error: err });
+    }
+  };
 
   return (
     <div className="space-y-3 md:space-y-6 w-full text-primary-700 ">
@@ -44,25 +64,37 @@ export default function SettingsPage() {
                 Update your application name and domain.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="grid gap-2">
-                <Input
-                  tooltipContent="App Name"
-                  placeholder="My Awesome Admin"
-                  className="max-w-md"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Input
-                  tooltipContent="Domain"
-                  placeholder="admin.example.com"
-                  className="max-w-md"
-                />
-              </div>
+            <CardContent className="space-y-4">
+              <FormField label="App Name" id="app-name">
+                {isLoading ? (
+                  <Skeleton className="w-md h-8" />
+                ) : (
+                  <Input
+                    tooltipOn={false}
+                    id="app-name"
+                    placeholder="My Awesome Admin"
+                    className="max-w-md"
+                    disabled={isUpdating}
+                    defaultValue={settings?.appName || ""}
+                    onBlur={(e) => handleUpdate("appName", e.target.value)}
+                  />
+                )}
+              </FormField>
+              <FormField id="domain" label="Domain">
+                {isLoading ? (
+                  <Skeleton className="w-md h-8" />
+                ) : (
+                  <Input
+                    tooltipOn={false}
+                    placeholder="admin.example.com"
+                    className="max-w-md"
+                    disabled={isUpdating}
+                    defaultValue={settings?.domain || ""}
+                    onBlur={(e) => handleUpdate("domain", e.target.value)}
+                  />
+                )}
+              </FormField>
             </CardContent>
-            <CardFooter>
-              <Button>Save Changes</Button>
-            </CardFooter>
           </Card>
         </TabsContent>
 
@@ -83,7 +115,13 @@ export default function SettingsPage() {
                     Require 2FA for all admin accounts.
                   </p>
                 </div>
-                <Switch checked={twoFactor} onCheckedChange={setTwoFactor} />
+                <Switch
+                  disabled={isUpdating}
+                  checked={settings?.twoFactor === "true"}
+                  onCheckedChange={(checked) =>
+                    handleUpdate("twoFactor", checked)
+                  }
+                />
               </div>
             </CardContent>
           </Card>
@@ -100,7 +138,11 @@ export default function SettingsPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center space-x-2">
-                <Switch id="email-alerts" />
+                <Switch
+                  disabled={isUpdating}
+                  checked={settings?.emailEnabled === "true"}
+                  onCheckedChange={(val) => handleUpdate("emailEnabled", val)}
+                />
                 <Label htmlFor="email-alerts" className="cursor-pointer">
                   Enable system alerts via email
                 </Label>

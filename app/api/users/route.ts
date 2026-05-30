@@ -122,7 +122,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const tempPassword = "Temp#123456";
+  const tempPassword = process.env.YPUR_DEFAULT_USER_PASS!;
   const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
   const user = await prisma.user.create({

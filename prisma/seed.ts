@@ -2,6 +2,28 @@ import { prisma } from "../lib/prisma";
 import bcrypt from "bcrypt";
 
 async function main() {
+  const settings = [
+    {
+      key: "smtpHost",
+      value: "smtp.gmail.com",
+    },
+    {
+      key: "smtpPort",
+      value: "465",
+    },
+    {
+      key: "smtpUser",
+      value: process.env.YOUR_GOOGLE_EMAIL!,
+    },
+    {
+      key: "smtpPass",
+      value: process.env.YOUR_GOOGLE_EMAIL_PASS!,
+    },
+    {
+      key: "emailEnabled",
+      value: "false",
+    },
+  ];
   const roles = [
     {
       name: "admin",
@@ -79,7 +101,21 @@ async function main() {
     });
   }
 
-  const password = await bcrypt.hash("123456", 10);
+  for (const setting of settings) {
+    await prisma.setting.upsert({
+      where: {
+        key: setting.key,
+      },
+
+      update: {
+        value: setting.value,
+      },
+
+      create: setting,
+    });
+  }
+
+  const password = await bcrypt.hash(process.env.YOUR_ADMIN_PASS!, 10);
 
   await prisma.user.upsert({
     where: { email: "admin@test.com" },
@@ -94,7 +130,8 @@ async function main() {
 }
 
 main()
-  .catch(() => {
+  .catch((error) => {
+    console.error("SEED ERROR:", error);
     process.exit(1);
   })
   .finally(async () => {

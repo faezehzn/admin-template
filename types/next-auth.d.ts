@@ -13,6 +13,7 @@ declare module "next-auth" {
       roleId: string;
       avatar?: string | null;
       status: UserStatus;
+      bio?: string;
       permissions: string[];
       roleLevel: number;
     } & DefaultSession["user"];
@@ -27,6 +28,7 @@ declare module "next-auth" {
     avatar?: string | null;
     status: UserStatus;
     roleLevel: number;
+    bio?: string;
     permissions: string[];
   }
 }
@@ -42,5 +44,6 @@ declare module "next-auth/jwt" {
     status: UserStatus;
     roleLevel: number;
     permissions: string[];
+    bio?: string;
   }
 }
