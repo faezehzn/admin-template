@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Dispatch, ReactNode, SetStateAction } from "react";
+import { Dispatch, ReactNode, SetStateAction, useEffect } from "react";
 
 export default function CreateBaseModal({
   open,
@@ -17,15 +17,23 @@ export default function CreateBaseModal({
   handler,
   isLoading,
   content,
+  onClose,
 }: {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   title?: string;
   description?: string;
   handler: () => void;
+  onClose?: () => void;
   content: ReactNode;
-  isLoading?: boolean
+  isLoading?: boolean;
 }) {
+  useEffect(() => {
+    if (!open) {
+      onClose?.();
+    }
+  }, [open]);
+  
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>

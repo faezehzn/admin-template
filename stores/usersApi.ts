@@ -1,19 +1,15 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { UserListItem } from "@/types/prisma";
 import { UpdateUserInput } from "@/lib/validations/users";
+import { ListArgsAPI } from "@/types";
 
 type UsersListResponse = {
   items: UserListItem[];
   meta: { page: number; pageSize: number; total: number; pageCount: number };
 };
 
-type UsersListArgs = {
-  page: number;
-  pageSize: number;
-  search?: string;
-  sortBy?: "createdAt" | "name" | "email" | "status" | "role";
-  sortDir?: "asc" | "desc";
-};
+type SortByColumn = "createdAt" | "name" | "email" | "status" | "role"
+
 
 type CreateUserInput = {
   name?: string | null;
@@ -26,7 +22,7 @@ export const usersApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "/api" }),
   tagTypes: ["Users", "Roles"],
   endpoints: (builder) => ({
-    getUsers: builder.query<UsersListResponse, UsersListArgs>({
+    getUsers: builder.query<UsersListResponse, ListArgsAPI<SortByColumn>>({
       query: ({
         page,
         pageSize,

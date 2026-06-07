@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useErrorToast } from "@/hooks/useCustomToasts";
+import { FormField } from "@/components/shared/formField";
 
 export default function LoginPage() {
   const { show: showError } = useErrorToast();
@@ -34,17 +35,23 @@ export default function LoginPage() {
             (e.preventDefault(), handleLogin());
           }}
         >
-          <Input
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <Input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <FormField id="email" label="Email">
+            <Input
+              placeholder="example@gmail.com"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </FormField>
+          <FormField id="password" label="Password">
+            <Input
+              type="****"
+              id="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </FormField>
           <Button className="w-full" type="submit">
             Login
           </Button>

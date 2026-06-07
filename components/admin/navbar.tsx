@@ -43,7 +43,6 @@ export default function Navbar({
           size={18}
         />
         <Input
-          tooltipOn={false}
           placeholder="Search..."
           className="pl-8 w-72 bg-primary-50"
         />

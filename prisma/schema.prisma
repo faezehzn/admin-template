@@ -27,6 +27,7 @@ model User {
   deletedAt DateTime?
   deletedBy String?
   bio       String?
+  // [RELATIONS_MARKER]
 }
 
 model Role {
@@ -38,6 +39,7 @@ model Role {
   deletedBy String?
   isSystem    Boolean          @default(false)
   level       Int @default(1)
+  // [RELATIONS_MARKER]
 }
 
 model Permission {
@@ -45,6 +47,7 @@ model Permission {
   name        String           @unique
   description String?
   roles       RolePermission[]
+  // [RELATIONS_MARKER]
 }
 
 model RolePermission {
@@ -55,6 +58,7 @@ model RolePermission {
   permission Permission @relation(fields: [permissionId], references: [id])
 
   @@id([roleId, permissionId])
+  // [RELATIONS_MARKER]
 }
 
 enum LogAction {
@@ -76,10 +80,16 @@ model ActivityLog {
 
   // targetUserId String?
   // targetUser   User?   @relation("TargetUser", fields: [targetUserId], references: [id])
+  // [RELATIONS_MARKER]
 }
 
 model Setting {
   id    String @id @default(cuid())
   key   String @unique
   value String
+  // [RELATIONS_MARKER]
 }
+
+// [ENUMS_MARKER]
+
+// [MODELS_MARKER]

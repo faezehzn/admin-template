@@ -7,7 +7,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Dispatch, ReactNode, SetStateAction } from "react";
+import { Dispatch, ReactNode, SetStateAction, useEffect } from "react";
 
 export default function EditBaseDrawer({
   open,
@@ -16,14 +16,22 @@ export default function EditBaseDrawer({
   title = "Edit Item",
   handler,
   isLoading,
+  onClose,
 }: {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   content: ReactNode;
   title?: string;
   handler: () => void;
+  onClose?: () => void;
   isLoading?: boolean;
 }) {
+  useEffect(() => {
+    if (!open) {
+      onClose?.();
+    }
+  }, [open]);
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetContent className="flex flex-col gap-6">

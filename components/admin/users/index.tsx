@@ -4,7 +4,9 @@ import EditBaseDrawer from "@/components/admin/edit-base-drawer";
 import Can from "@/components/auth/can";
 import CreateBaseModal from "@/components/modals/create-base-modal";
 import { DeleteBaseModal } from "@/components/modals/delete-base-modal";
+import { FormField } from "@/components/shared/formField";
 import { Pagination } from "@/components/shared/pagination";
+import { RelationSelect } from "@/components/shared/relationSelect";
 import { CustomTable } from "@/components/shared/table";
 import { Action, Column } from "@/components/shared/table/type";
 import { TableMobile } from "@/components/shared/tableMobile";
@@ -296,7 +298,6 @@ export default function UsersComponent() {
             size={18}
           />
           <Input
-            tooltipOn={false}
             placeholder="Search users..."
             className="pl-9 w-full sm:w-72 bg-primary-50"
             value={search}
@@ -399,42 +400,62 @@ export default function UsersComponent() {
         title="Create User"
         description="Create a new user by filling out the form below."
         handler={handleCreateUser}
+        onClose={() =>
+          setCreateForm({
+            name: "",
+            email: "",
+            roleId: "",
+          })
+        }
         isLoading={isCreating}
         content={
           <>
-            <Input
-              placeholder="Full name"
-              value={createForm.name}
-              onChange={(e) =>
-                setCreateForm((p) => ({ ...p, name: e.target.value }))
-              }
-            />
+            <FormField id="fullName" label="Full name">
+              <Input
+                id="fullName"
+                value={createForm.name}
+                onChange={(e) =>
+                  setCreateForm((p) => ({ ...p, name: e.target.value }))
+                }
+              />
+            </FormField>
 
-            <Input
-              placeholder="Email"
-              value={createForm.email}
-              onChange={(e) =>
-                setCreateForm((p) => ({ ...p, email: e.target.value }))
-              }
-            />
+            <FormField id="email" label="Email">
+              <Input
+                id="email"
+                value={createForm.email}
+                onChange={(e) =>
+                  setCreateForm((p) => ({ ...p, email: e.target.value }))
+                }
+              />
+            </FormField>
+
             {/* Role Select */}
-            <Select
-              value={createForm.roleId}
-              onValueChange={(v) => setCreateForm((p) => ({ ...p, roleId: v }))}
-            >
-              <SelectTrigger className="bg-primary-50 w-full capitalize">
-                <SelectValue placeholder="Select role" />
-              </SelectTrigger>
-              <SelectContent>
-                {roles
-                  ?.filter((item) => item.level < session!.user.roleLevel)
-                  .map((r) => (
-                    <SelectItem key={r.id} value={r.id} className="capitalize">
-                      {r.name}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
+            <FormField label="Select role">
+              <Select
+                value={createForm.roleId}
+                onValueChange={(v) =>
+                  setCreateForm((p) => ({ ...p, roleId: v }))
+                }
+              >
+                <SelectTrigger className="bg-primary-50 w-full capitalize">
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+                <SelectContent>
+                  {roles
+                    ?.filter((item) => item.level < session!.user.roleLevel)
+                    .map((r) => (
+                      <SelectItem
+                        key={r.id}
+                        value={r.id}
+                        className="capitalize"
+                      >
+                        {r.name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </FormField>
           </>
         }
       />
@@ -444,68 +465,77 @@ export default function UsersComponent() {
         <EditBaseDrawer
           handler={handleEditUser}
           isLoading={isUpdating}
+          onClose={() => setEditUserData(null)}
           content={
             <div className="flex flex-col gap-4 w-full">
-              <Input
-                placeholder="Name"
-                value={editUserData.name ?? ""}
-                onChange={(e) =>
-                  setEditUserData((p) =>
-                    p ? { ...p, name: e.target.value } : p,
-                  )
-                }
-              />
-              <Input
-                placeholder="Email"
-                value={editUserData.email}
-                onChange={(e) =>
-                  setEditUserData((p) =>
-                    p ? { ...p, email: e.target.value } : p,
-                  )
-                }
-              />
+              <FormField id="fullName" label="Full name">
+                <Input
+                  id="fullName"
+                  value={editUserData.name ?? ""}
+                  onChange={(e) =>
+                    setEditUserData((p) =>
+                      p ? { ...p, name: e.target.value } : p,
+                    )
+                  }
+                />
+              </FormField>
+              <FormField id="email" label="Email">
+                <Input
+                  id="email"
+                  placeholder="Email"
+                  value={editUserData.email}
+                  onChange={(e) =>
+                    setEditUserData((p) =>
+                      p ? { ...p, email: e.target.value } : p,
+                    )
+                  }
+                />
+              </FormField>
 
-              <Select
-                value={editUserData.roleId}
-                onValueChange={(v) =>
-                  setEditUserData((p) => (p ? { ...p, roleId: v } : p))
-                }
-              >
-                <SelectTrigger className="bg-primary-50 w-full">
-                  <SelectValue placeholder="Select role" />
-                </SelectTrigger>
-                <SelectContent>
-                  {roles
-                    ?.filter((item) => item.level < session!.user.roleLevel)
-                    .map((r) => (
-                      <SelectItem key={r.id} value={r.id}>
-                        {r.name}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-
-              <Select
-                value={editUserData.status}
-                onValueChange={(v) =>
-                  setEditUserData((p) =>
-                    p
-                      ? {
-                          ...p,
-                          status: v as UserStatus,
-                        }
-                      : p,
-                  )
-                }
-              >
-                <SelectTrigger className="bg-primary-50 w-full">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="deactive">Deactive</SelectItem>
-                </SelectContent>
-              </Select>
+              <FormField label="Select role">
+                <Select
+                  value={editUserData.roleId}
+                  onValueChange={(v) =>
+                    setEditUserData((p) => (p ? { ...p, roleId: v } : p))
+                  }
+                >
+                  <SelectTrigger className="bg-primary-50 w-full">
+                    <SelectValue placeholder="Select role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {roles
+                      ?.filter((item) => item.level < session!.user.roleLevel)
+                      .map((r) => (
+                        <SelectItem key={r.id} value={r.id}>
+                          {r.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </FormField>
+              <FormField label="Status">
+                <Select
+                  value={editUserData.status}
+                  onValueChange={(v) =>
+                    setEditUserData((p) =>
+                      p
+                        ? {
+                            ...p,
+                            status: v as UserStatus,
+                          }
+                        : p,
+                    )
+                  }
+                >
+                  <SelectTrigger className="bg-primary-50 w-full">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="deactive">Deactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormField>
             </div>
           }
           title="Edit User"

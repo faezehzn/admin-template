@@ -256,7 +256,6 @@ export default function ProfilePage() {
                         id="username"
                         value={form.name}
                         className="bg-primary-50/50"
-                        tooltipOn={false}
                         onChange={(e) =>
                           setForm((prev) => ({
                             ...prev,
@@ -275,7 +274,6 @@ export default function ProfilePage() {
                         type="email"
                         value={form.email}
                         className="bg-primary-50/50"
-                        tooltipOn={false}
                         onChange={(e) =>
                           setForm((prev) => ({
                             ...prev,
@@ -339,7 +337,6 @@ export default function ProfilePage() {
                     onChange={(e) =>
                       setPasswords({ ...passwords, current: e.target.value })
                     }
-                    tooltipOn={false}
                   />
                 </FormField>
                 <FormField id="new-password" label="New Password">
@@ -351,7 +348,6 @@ export default function ProfilePage() {
                     type="password"
                     value={passwords.new}
                     className="bg-primary-50/50"
-                    tooltipOn={false}
                   />
                 </FormField>
                 <FormField id="confirm-password" label="Confirm New Password">
@@ -363,7 +359,6 @@ export default function ProfilePage() {
                     onChange={(e) =>
                       setPasswords({ ...passwords, confirm: e.target.value })
                     }
-                    tooltipOn={false}
                   />
                 </FormField>
                 <Button

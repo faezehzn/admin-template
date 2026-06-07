@@ -70,7 +70,6 @@ export default function SettingsPage() {
                   <Skeleton className="w-md h-8" />
                 ) : (
                   <Input
-                    tooltipOn={false}
                     id="app-name"
                     placeholder="My Awesome Admin"
                     className="max-w-md"
@@ -85,7 +84,6 @@ export default function SettingsPage() {
                   <Skeleton className="w-md h-8" />
                 ) : (
                   <Input
-                    tooltipOn={false}
                     placeholder="admin.example.com"
                     className="max-w-md"
                     disabled={isUpdating}

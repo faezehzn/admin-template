@@ -6,6 +6,8 @@ import { rolesApi } from "./rolesApi";
 import { permissionsApi } from "./permissionApi";
 import { settingsApi } from "./settingsApi";
 import { profileApi } from "./profileApi";
+import { relationApi } from "./relationApi";
+// [IMPORTS_MARKER]
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +16,8 @@ export const store = configureStore({
     [permissionsApi.reducerPath]: permissionsApi.reducer,
     [settingsApi.reducerPath]: settingsApi.reducer,
     [profileApi.reducerPath]: profileApi.reducer,
+    [relationApi.reducerPath]: relationApi.reducer,
+    // [REDUCERS_MARKER]
   },
   middleware: (getDefault) =>
     getDefault().concat(
@@ -22,6 +26,8 @@ export const store = configureStore({
       permissionsApi.middleware,
       settingsApi.middleware,
       profileApi.middleware,
+      relationApi.middleware,
+      // [MIDDLEWARE_MARKER]
     ),
 });
 

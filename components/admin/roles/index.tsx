@@ -5,6 +5,7 @@ import PermissionsMatrix from "@/components/admin/permissions-matrix";
 import Can from "@/components/auth/can";
 import CreateBaseModal from "@/components/modals/create-base-modal";
 import { DeleteBaseModal } from "@/components/modals/delete-base-modal";
+import { FormField } from "@/components/shared/formField";
 import { CustomTable } from "@/components/shared/table";
 import { Action, Column } from "@/components/shared/table/type";
 import { TableMobile } from "@/components/shared/tableMobile";
@@ -43,7 +44,7 @@ export default function RolesComponent() {
       permissionId: string;
     }[];
   }>(initialRole);
-  const [editRoleData, setEditRoleData] = useState<RoleOption>();
+  const [editRoleData, setEditRoleData] = useState<RoleOption |null>(null);
   const [deleteRole, setDeleteRole] = useState<RoleOption | null>();
 
   /**
@@ -168,12 +169,6 @@ export default function RolesComponent() {
     }
   };
 
-  useEffect(() => {
-    if (!createOpen) {
-      setCreateRoleData(initialRole);
-    }
-  }, [createOpen]);
-
   return (
     <div className="space-y-3 md:space-y-6 w-full text-primary-700 ">
       {/* Header */}
@@ -218,82 +213,104 @@ export default function RolesComponent() {
       <CreateBaseModal
         open={createOpen}
         setOpen={setCreateOpen}
+        onClose={()=> setCreateRoleData(initialRole)}
         title="Create Role"
         description=""
         handler={handleCreate}
         isLoading={isLoadingCreate}
         content={
           <div className="space-y-4">
-            <Input
-              placeholder="Role name"
-              value={createRoleData?.name}
-              onChange={(e) =>
-                setCreateRoleData((prev) => ({ ...prev, name: e.target.value }))
-              }
-            />
-            <Input
-              placeholder="Role level"
-              value={createRoleData?.level}
-              type="number"
-              onChange={(e) =>
-                setCreateRoleData((prev) => ({
-                  ...prev,
-                  level: Number(e.target.value),
-                }))
-              }
-            />
+            <FormField id="roleName" label="Role name">
+              <Input
+                placeholder="Product manager"
+                id="roleName"
+                value={createRoleData?.name}
+                onChange={(e) =>
+                  setCreateRoleData((prev) => ({
+                    ...prev,
+                    name: e.target.value,
+                  }))
+                }
+              />
+            </FormField>
+            <FormField id="roleLevel" label="Role level">
+              <Input
+                placeholder="20"
+                id="roleLevel"
+                value={createRoleData?.level}
+                type="number"
+                onChange={(e) =>
+                  setCreateRoleData((prev) => ({
+                    ...prev,
+                    level: Number(e.target.value),
+                  }))
+                }
+              />
+            </FormField>
 
-            <PermissionsMatrix
-              value={createRoleData.permissions}
-              onChange={(val) =>
-                setCreateRoleData((prev) => ({ ...prev, permissions: val }))
-              }
-            />
+            <FormField label="Role permissions">
+              <PermissionsMatrix
+                value={createRoleData.permissions}
+                onChange={(val) =>
+                  setCreateRoleData((prev) => ({ ...prev, permissions: val }))
+                }
+              />
+            </FormField>
           </div>
         }
       />
 
       {editRoleData && (
         <EditBaseDrawer
+        onClose={()=> setEditRoleData(null)}
           handler={handleUpdate}
           content={
             <div className="space-y-4">
-              <Input
-                placeholder="Role name"
-                value={editRoleData.name}
-                onChange={(e) =>
-                  setEditRoleData((prev) =>
-                    prev ? { ...prev, name: e.target.value } : prev,
-                  )
-                }
-              />
-              <Input
-                placeholder="Role level"
-                value={editRoleData.level}
-                type="number"
-                onChange={(e) =>
-                  setEditRoleData((prev) =>
-                    prev ? { ...prev, level: Number(e.target.value) } : prev,
-                  )
-                }
-              />
+              <FormField label="Role name" id="roleName">
+                <Input
+                  placeholder="Product manager"
+                  id="roleName"
+                  value={editRoleData.name}
+                  onChange={(e) =>
+                    setEditRoleData((prev) =>
+                      prev ? { ...prev, name: e.target.value } : prev,
+                    )
+                  }
+                />
+              </FormField>
 
-              <PermissionsMatrix
-                value={editRoleData.permissions}
-                onChange={(val) =>
-                  setEditRoleData((prev) =>
-                    prev
-                      ? {
-                          ...prev,
-                          permissions: val.map((p) => ({
-                            roleId: prev.id,
-                            permissionId: p.permissionId,
-                          })),
-                        }
-                      : prev,
-                  )
-                }
-              />
+              <FormField label="Role level" id="roleLevel">
+                <Input
+                  placeholder="20"
+                  id="roleLevel"
+                  value={editRoleData.level}
+                  type="number"
+                  onChange={(e) =>
+                    setEditRoleData((prev) =>
+                      prev ? { ...prev, level: Number(e.target.value) } : prev,
+                    )
+                  }
+                />
+              </FormField>
+
+              <FormField label="Role permissions">
+                <PermissionsMatrix
+                  value={editRoleData.permissions}
+                  onChange={(val) =>
+                    setEditRoleData((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            permissions: val.map((p) => ({
+                              roleId: prev.id,
+                              permissionId: p.permissionId,
+                            })),
+                          }
+                        : prev,
+                    )
+                  }
+                />
+              </FormField>
             </div>
           }
           open={editOpen}

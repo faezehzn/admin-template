@@ -15,5 +15,7 @@ export type UserListItem = Prisma.UserGetPayload<{
 }>;
 
 export type RoleOption = Prisma.RoleGetPayload<{
-  select: { id: true; name: true, users: true, permissions: true, level: true };
+  select: { id: true; name: true; users: true; permissions: true; level: true };
 }>;
+
+// [MODELS_MARKER]

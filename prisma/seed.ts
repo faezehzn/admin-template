@@ -1,62 +1,69 @@
 import { prisma } from "../lib/prisma";
 import bcrypt from "bcrypt";
 
+export const settings = [
+  {
+    key: "smtpHost",
+    value: "smtp.gmail.com",
+  },
+  {
+    key: "smtpPort",
+    value: "465",
+  },
+  {
+    key: "smtpUser",
+    value: process.env.YOUR_GOOGLE_EMAIL!,
+  },
+  {
+    key: "smtpPass",
+    value: process.env.YOUR_GOOGLE_EMAIL_PASS!,
+  },
+  {
+    key: "emailEnabled",
+    value: "false",
+  },
+] as const;
+
+export const roles = [
+  {
+    name: "admin",
+    level: 100,
+    isSystem: true,
+  },
+
+  {
+    name: "editor",
+    level: 50,
+    isSystem: true,
+  },
+
+  {
+    name: "viewer",
+    level: 10,
+    isSystem: true,
+  },
+] as const;
+
+export const permissions = [
+  "users.create",
+  "users.read",
+  "users.update",
+  "users.delete",
+
+  "roles.create",
+  "roles.read",
+  "roles.update",
+  "roles.delete",
+  
+  "settings.read",
+  "settings.update",
+
+  // [INSERT_PERMISSIONS]
+] as const;
+
+export type Permission = (typeof permissions)[number];
+
 async function main() {
-  const settings = [
-    {
-      key: "smtpHost",
-      value: "smtp.gmail.com",
-    },
-    {
-      key: "smtpPort",
-      value: "465",
-    },
-    {
-      key: "smtpUser",
-      value: process.env.YOUR_GOOGLE_EMAIL!,
-    },
-    {
-      key: "smtpPass",
-      value: process.env.YOUR_GOOGLE_EMAIL_PASS!,
-    },
-    {
-      key: "emailEnabled",
-      value: "false",
-    },
-  ];
-  const roles = [
-    {
-      name: "admin",
-      level: 100,
-      isSystem: true,
-    },
-
-    {
-      name: "editor",
-      level: 50,
-      isSystem: true,
-    },
-
-    {
-      name: "viewer",
-      level: 10,
-      isSystem: true,
-    },
-  ];
-  const permissions = [
-    "users.create",
-    "users.read",
-    "users.update",
-    "users.delete",
-
-    "roles.create",
-    "roles.read",
-    "roles.update",
-    "roles.delete",
-
-    "settings.read",
-    "settings.update",
-  ];
 
   for (const p of permissions) {
     await prisma.permission.upsert({

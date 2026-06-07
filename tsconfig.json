@@ -31,6 +31,6 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts",
     "types/**/*.d.ts"
-  ],
+, "scripts/generate-resource.ts"  ],
   "exclude": ["node_modules"]
 }

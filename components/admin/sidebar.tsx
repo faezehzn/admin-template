@@ -1,13 +1,27 @@
 "use client";
 
 import { Dispatch, SetStateAction } from "react";
-import { LayoutDashboard, Users, Shield, Settings, User } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  Shield,
+  Settings,
+  User,
+  LucideIcon,
+  // [SIDEBAR_ITEM_ICON_IMPORT_MARKER]
+} from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { PROJECT_NAME } from "@/constants";
 import { useSession } from "next-auth/react";
+import { Permission } from "@/prisma/seed";
 
-export const sidebarItems = [
+export const sidebarItems: {
+  name: string;
+  href: string;
+  icon: LucideIcon;
+  permission?: Permission;
+}[] = [
   {
     name: "Dashboard",
     href: "/admin",
@@ -27,6 +41,7 @@ export const sidebarItems = [
     icon: Shield,
     permission: "roles.read",
   },
+  // [SIDEBAR_ITEM_MARKER]
 
   {
     name: "Settings",
